@@ -3,8 +3,8 @@ from rest_framework.urlpatterns import format_suffix_patterns
 from message_app import views
 
 urlpatterns = [
-    path('messages/', views.message_list),
-    path('messages/<int:pk>/', views.message_detail),
+    path('messages/', views.MessageList.as_view()),
+    path('messages/<int:pk>/', views.MessageDetail.as_view()),
 ]
 
 urlpatterns = format_suffix_patterns(urlpatterns)
