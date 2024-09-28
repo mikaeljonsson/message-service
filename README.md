@@ -53,26 +53,49 @@ First you need to create a database:
 python3 manage.py makemigrations message_app
 python3 manage.py migrate message_app
 
-This is how you start the service:
-python3 manage.py runserver
-
-You should now be able to access these endpoints:
-http://127.0.0.1:8000/messages/
-http://127.0.0.1:8000/messages/<id>/
-
 
 ## Other artifacts
 OpenAPI schema can be built using the description here:
 https://www.django-rest-framework.org/api-guide/schemas/
 
 ## Run
+This is how you start the service:
+
+python3 manage.py runserver
+
+You should now be able to access these endpoints in your browser or using curl or equivalent:
+http://127.0.0.1:8000/messages/
+http://127.0.0.1:8000/messages/<id>/
+http://127.0.0.1:8000/messages/bulk-delete
+
+These query argument can be used to filter the response to the message list (messages/):
+recipient : string : Match against the recipient
+from_id : integer : The lowest message id you want returned
+to_id : integer : The highest message id you want returned
+is_fetched : True | False : Get the messages that are already fetched (or not). Default is to fetch all.
+
+This query argument affects if the messages are updated:
+skip_is_fetched_update : True | False : True indicates the is_fetched field should not be updated. Default is false.
+
+Example: http://127.0.0.1:8000/messages/?from_id=3&to_id=7&recipient=mikael&no_is_fetched_update=True
+
+The individual message resource (messages/<id>/) allows the normal operations, GET, PUT, DELETE.
+
+There is a bulk delete endpoint (messages/bulk-delete) where POST with a body that consists of a list of message id will delete those messages.
+
+### To run tests:
+cd message_service
+./manage.py test
+
+# Known shortcomings
+The query arguments for is_fetched must be False or True.
+If the query arguments is of the wrong type, e.g. from_id is not an integer, you get a 5xx response rather than a 4xx.
 
 # Implementation decisions
 The implementation should preferably be done in Python. I've done very little coding in python, so it's a good challenge.
-After reviewing the options of web frameworks, I decided on Django Rest Framework. Django is the most popular framework and Django Rest Framework builds on that.
+After reviewing the options of web frameworks, I decided on Django Rest Framework. Django is the most popular Python web framework and Django Rest Framework builds on that to provide a REST API.
 
-For the database I decided to go with SQLite as it's built-in to Python and the least work to setup. If this would be aimed for production, I would
-most likely have used postgres.
+For the database I decided to go with SQLite as it's built-in to Python and the least work to setup. If this would be aimed for production, I would change this to postgres.
 
 For a webserver I went with the built in option. For production, I would use Apache and mod_wsgi.
 
