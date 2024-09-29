@@ -19,23 +19,30 @@ def api_delete_messages(request, format=None):
     Message.objects.filter(id__in=request.data).delete()
     return Response({'status': 'success'})
 
+@api_view(['POST'])
+def api_fetch_new_messages(request, format=None):
+    # Fetch and update all new messages
+    the_messages = Message.objects.filter(is_fetched__exact=False)
+    serializer = MessageSerializer(the_messages, many=True)
+    serialized_data = serializer.data
+    Message.objects.filter(is_fetched__exact=False).update(is_fetched=True)
+    return Response(data=serialized_data)
+
 class MessageList(generics.ListCreateAPIView):
     serializer_class = MessageSerializer
-    queryset = Message.objects.all()
 
     def get_queryset(self):
+        queryset = Message.objects.all()
         """
         Optionally filters the returned messages based on different query parameters.
         The filters include matching on `recipient`, 'is_fetched', or for the 'id' field
         being greater or equel to 'from_id' and/or smaller or equal to 'to_id'.
         """
-        queryset = super().get_queryset() # Message.objects.all()
         recipient = self.request.query_params.get('recipient')
         from_id = self.request.query_params.get('from_id')
         to_id = self.request.query_params.get('to_id')
-        is_fetched = self.request.query_params.get('is_fetched')
         skip_update = self.request.query_params.get('skip_is_fetched_update')
-        print("skip_update", skip_update)
+        is_fetched = self.request.query_params.get('is_fetched')
 
         if recipient is not None:
             queryset = queryset.filter(recipient__exact=recipient)
@@ -47,16 +54,7 @@ class MessageList(generics.ListCreateAPIView):
             # convert false to False and true to True
             queryset = queryset.filter(is_fetched__exact=is_fetched)
 
-        # This vioalates the RESTful principle of not changing the state of the server
-        # in a GET request, but the violation is intended as we want to store
-        # what messages have been fetched.
-        if skip_update != 'True':
-            print('Will update', queryset)
-            update_queryset = queryset
-            update_queryset.update(is_fetched=True)
-
         return queryset
-
 
 class MessageDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Message.objects.all()

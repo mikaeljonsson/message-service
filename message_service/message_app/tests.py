@@ -13,7 +13,6 @@ class TestSingleMessage(APITestCase):
     def create_message(self, recipient, message_body):
         url = reverse('message-list')
         data = {'recipient': recipient, 'message_body': message_body}
-        print(data)
         response = self.client.post(url, data, format='json')
         new_id = response.data.get('id')
         return new_id
@@ -110,14 +109,13 @@ class TestMultipleMessages(APITestCase):
         for number in range(10):
             Message.objects.create(recipient='john.doe'+str(10-number), message_body='message {}'.format(number))
         self.assertEqual(Message.objects.count(), 10)
+        # Use API to fetch all new messages
+        fetch_new_url = reverse('fetch-new-messages')
+        response = self.client.post(fetch_new_url, query_params={}, format='json')
+        self.assertEqual(len(response.data), 10)
+
         url = reverse('message-list')
-        response = self.client.get(url, query_params={'is_fetched': 'False', 'from_id' : 8}, format='json')
-        self.assertEqual(len(response.data), 0)
-        # The result below is wrong, it should be 3.
-        # 3 items are filtered out and updated, but it seems the returned value is [] instead of the 3 items.
-        print("After no skip updateresponse.data: ", response.data)
-        response = self.client.get(url, query_params={'skip_is_fetched_update': 'True'}, format='json')
-        print("Fetch all with skip: response.data: ", response.data)
+        response = self.client.get(url, query_params={'is_fetched': 'True'}, format='json')
         self.assertEqual(len(response.data), 10)
 
     def test_get_no_message(self):
@@ -135,7 +133,6 @@ class TestMultipleMessages(APITestCase):
             Message.objects.create(recipient='john.doe', message_body='message {}'.format(number))
         # delete 3 messages
         url = reverse('bulk-delete')
-        print("url: ", url)
         data = [1,3,4]
         response = self.client.post(url, data=data, format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)

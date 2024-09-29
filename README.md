@@ -67,6 +67,7 @@ You should now be able to access these endpoints in your browser or using curl o
 http://127.0.0.1:8000/messages/
 http://127.0.0.1:8000/messages/<id>/
 http://127.0.0.1:8000/messages/bulk-delete
+http://127.0.0.1:8000/messages/fetch-new
 
 These query argument can be used to filter the response to the message list (messages/):
 recipient : string : Match against the recipient
@@ -87,13 +88,22 @@ If you go to http://127.0.0.1:8000/messages/bulk-delete you will get an error me
 Example where id 5 and 7 are removed from command line in bulk:
 http POST http://127.0.0.1:8000/messages/bulk-delete []:=5 []:=7
 
+The bulk delete endpoint does not follow the REST principles, but it could make sense from a performance perspective
+to make one request.
+
+There is another endpoint that fetches all messages marked as not yet fetched and also updates their status to fetched.
+Rather than having a GET that violates the REST principles of being idempotent, this special functionality is kept on
+a specific endpoint. Example:
+
+http POST http://127.0.0.1:8000/messages/fetch-new
+
 ### To run tests:
 cd message_service
 ./manage.py test
 
 # Known shortcomings
 The query arguments for is_fetched must be False or True.
-If the query arguments is of the wrong type, e.g. from_id is not an integer, you get a 5xx response rather than a 4xx.
+If a query argument is of the wrong type, e.g. from_id is not an integer, you get a 5xx response rather than a 4xx.
 
 # Implementation decisions
 The implementation should preferably be done in Python. I've done very little coding in python, so it's a good challenge.
