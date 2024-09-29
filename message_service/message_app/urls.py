@@ -4,7 +4,7 @@ from message_app import views
 
 urlpatterns = format_suffix_patterns([
     path('', views.api_root),
-    path('messages/bulk-delete', views.api_delete_messages),
+    path('messages/bulk-delete', views.api_delete_messages, name='bulk-delete'),
     path('messages/',
         views.MessageList.as_view(),
         name='message-list'),

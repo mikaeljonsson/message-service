@@ -9,4 +9,8 @@ class Message(models.Model):
     is_fetched = models.BooleanField(default=False)
 
     class Meta:
-        ordering = ['recipient','id']
+        # The requirement is to order in chrononogial order, but for efficiency
+        # in a real time scenario, it would perhaps be more efficient to order them by
+        # ['recipient', 'id'], as the search would then normally always be done per recipient
+        # and the entire DB does not need to be searched through.
+        ordering = ['id']

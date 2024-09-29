@@ -21,6 +21,7 @@ def api_delete_messages(request, format=None):
 
 class MessageList(generics.ListCreateAPIView):
     serializer_class = MessageSerializer
+    queryset = Message.objects.all()
 
     def get_queryset(self):
         """
@@ -28,7 +29,7 @@ class MessageList(generics.ListCreateAPIView):
         The filters include matching on `recipient`, 'is_fetched', or for the 'id' field
         being greater or equel to 'from_id' and/or smaller or equal to 'to_id'.
         """
-        queryset = Message.objects.all()
+        queryset = super().get_queryset() # Message.objects.all()
         recipient = self.request.query_params.get('recipient')
         from_id = self.request.query_params.get('from_id')
         to_id = self.request.query_params.get('to_id')
@@ -50,8 +51,10 @@ class MessageList(generics.ListCreateAPIView):
         # in a GET request, but the violation is intended as we want to store
         # what messages have been fetched.
         if skip_update != 'True':
-            print('Will update')
-            queryset.update(is_fetched=True)
+            print('Will update', queryset)
+            update_queryset = queryset
+            update_queryset.update(is_fetched=True)
+
         return queryset
 
 

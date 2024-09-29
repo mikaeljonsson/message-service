@@ -82,6 +82,10 @@ Example: http://127.0.0.1:8000/messages/?from_id=3&to_id=7&recipient=mikael&no_i
 The individual message resource (messages/<id>/) allows the normal operations, GET, PUT, DELETE.
 
 There is a bulk delete endpoint (messages/bulk-delete) where POST with a body that consists of a list of message id will delete those messages.
+If you go to http://127.0.0.1:8000/messages/bulk-delete you will get an error message and forms to provide the correct POST.
+
+Example where id 5 and 7 are removed from command line in bulk:
+http POST http://127.0.0.1:8000/messages/bulk-delete []:=5 []:=7
 
 ### To run tests:
 cd message_service
