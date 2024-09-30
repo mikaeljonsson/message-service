@@ -9,7 +9,6 @@ from rest_framework.reverse import reverse
 @api_view(['GET'])
 def api_root(request, format=None):
     return Response({
-        # 'users': reverse('user-list', request=request, format=format),
         'messages': reverse('message-list', request=request, format=format),
         'fetch new messages': reverse('fetch-new-messages', request=request, format=format),
         'bulk delete messages': reverse('bulk-delete', request=request, format=format)
@@ -43,7 +42,6 @@ class MessageList(generics.ListCreateAPIView):
         recipient = self.request.query_params.get('recipient')
         from_id = self.request.query_params.get('from_id')
         to_id = self.request.query_params.get('to_id')
-        skip_update = self.request.query_params.get('skip_is_fetched_update')
         is_fetched = self.request.query_params.get('is_fetched')
 
         if recipient is not None:

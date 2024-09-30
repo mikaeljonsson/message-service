@@ -35,7 +35,7 @@ sudo apt-get install python3 python3-dev
 
 Install pip
 ### Setup virtual environment:
-This is to avoid polluting the global environment
+This is to avoid polluting the global environment.
 sudo apt install python3.12-venv
 python3 -m venv ~/.virtualenvs/djangodev
 source ~/.virtualenvs/djansource ~/.virtualenvs/djangodev/bin/activate
@@ -44,12 +44,36 @@ source ~/.virtualenvs/djansource ~/.virtualenvs/djangodev/bin/activate
 python -m pip install Django
 
 ### Install Django REST framework and other modules needed by the application
-pip install djangorestframework
-pip install markdown       # Markdown support for the browsable API.
-pip install django-filter  # Filtering support
+Use pip install to get packages that you need.
+This is the list I have installed (using 'pip list') but your version may be different:
+
+Package             Version
+------------------- ---------
+asgiref             3.8.1
+certifi             2024.8.30
+charset-normalizer  3.3.2
+defusedxml          0.7.1
+Django              5.1.1
+django-filter       24.3
+djangorestframework 3.15.2
+httpie              3.2.3
+idna                3.10
+Markdown            3.7
+markdown-it-py      3.0.0
+mdurl               0.1.2
+multidict           6.1.0
+pip                 24.0
+Pygments            2.18.0
+PySocks             1.7.1
+requests            2.31.0
+requests-toolbelt   1.0.0
+rich                13.8.1
+setuptools          75.1.0
+sqlparse            0.5.1
+urllib3             2.2.3
 
 ## Build
-First you need to create a database:
+Before you run you first need to create a database:
 python3 manage.py makemigrations message_app
 python3 manage.py migrate message_app
 
