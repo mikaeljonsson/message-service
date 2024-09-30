@@ -7,7 +7,7 @@ class MessageSerializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
         model = Message
-        fields = ['id', 'create_time', 'recipient', 'message_body', 'is_fetched']
+        fields = ['url', 'id', 'create_time', 'recipient', 'message_body', 'is_fetched']
 
 """
 class UserSerializer(serializers.HyperlinkedModelSerializer):

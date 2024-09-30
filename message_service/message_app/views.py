@@ -10,8 +10,10 @@ from rest_framework.reverse import reverse
 def api_root(request, format=None):
     return Response({
         # 'users': reverse('user-list', request=request, format=format),
-        'messages': reverse('message-list', request=request, format=format)
-    })
+        'messages': reverse('message-list', request=request, format=format),
+        'fetch new messages': reverse('fetch-new-messages', request=request, format=format),
+        'bulk delete messages': reverse('bulk-delete', request=request, format=format)
+   })
 
 @api_view(['POST'])
 def api_delete_messages(request, format=None):
@@ -23,10 +25,10 @@ def api_delete_messages(request, format=None):
 def api_fetch_new_messages(request, format=None):
     # Fetch and update all new messages
     the_messages = Message.objects.filter(is_fetched__exact=False)
-    serializer = MessageSerializer(the_messages, many=True)
+    serializer = MessageSerializer(the_messages, many=True, context={'request': request})
     serialized_data = serializer.data
     Message.objects.filter(is_fetched__exact=False).update(is_fetched=True)
-    return Response(data=serialized_data)
+    return Response(serialized_data)
 
 class MessageList(generics.ListCreateAPIView):
     serializer_class = MessageSerializer
