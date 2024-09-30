@@ -90,21 +90,21 @@ class TestMultipleMessages(APITestCase):
         # get all the messages
         url = reverse('message-list')
         response = self.client.get(url, query_params={'skip_is_fetched_update': 'True', 'is_fetched': 'False'}, format='json')
-        self.assertEqual(len(response.data), 10) # at creation, all messages have is_fetched=False
+        self.assertEqual(len(response.data['results']), 10) # at creation, all messages have is_fetched=False
         response = self.client.get(url, query_params={'skip_is_fetched_update': 'True', 'recipient': 'john.doe5'}, format='json')
-        self.assertEqual(len(response.data), 1)
+        self.assertEqual(len(response.data['results']), 1)
         response = self.client.get(url, query_params={'skip_is_fetched_update': 'True', 'is_fetched': 'False'}, format='json')
-        self.assertEqual(len(response.data), 10) # nothing changed
+        self.assertEqual(len(response.data['results']), 10) # nothing changed
         response = self.client.get(url, query_params={'skip_is_fetched_update': 'True', 'is_fetched': 'True'}, format='json')
-        self.assertEqual(len(response.data), 0)
+        self.assertEqual(len(response.data['results']), 0)
         response = self.client.get(url, query_params={'skip_is_fetched_update': 'True', 'is_fetched': 'False', 'from_id' : 8}, format='json')
-        self.assertEqual(len(response.data), 3)
+        self.assertEqual(len(response.data['results']), 3)
         response = self.client.get(url, query_params={'skip_is_fetched_update': 'True', 'is_fetched': 'False', 'to_id' : 4}, format='json')
-        self.assertEqual(len(response.data), 4)
+        self.assertEqual(len(response.data['results']), 4)
         response = self.client.get(url, query_params={'skip_is_fetched_update': 'True', 'is_fetched': 'False', 'to_id' : 4, 'from_id' : 5}, format='json')
-        self.assertEqual(len(response.data), 0)
+        self.assertEqual(len(response.data['results']), 0)
 
-    def test_get_messages_with_update(self):
+    def test_fetch_new_messages_with_update(self):
         # create 10 messages
         for number in range(10):
             Message.objects.create(recipient='john.doe'+str(10-number), message_body='message {}'.format(number))
@@ -116,16 +116,16 @@ class TestMultipleMessages(APITestCase):
 
         url = reverse('message-list')
         response = self.client.get(url, query_params={'is_fetched': 'True'}, format='json')
-        self.assertEqual(len(response.data), 10)
+        self.assertEqual(len(response.data['results']), 10)
 
     def test_get_no_message(self):
         for number in range(10):
             Message.objects.create(recipient='john.doe', message_body='message {}'.format(number))
         url = reverse('message-list')
         response = self.client.get(url, query_params={'from_id' : 4, 'to_id' : 5}, format='json')
-        self.assertEqual(len(response.data), 2)
+        self.assertEqual(len(response.data['results']), 2)
         response = self.client.get(url, query_params={'from_id' : 5, 'to_id' : 4}, format='json')
-        self.assertEqual(len(response.data), 0)
+        self.assertEqual(len(response.data['results']), 0)
 
     def test_delete_bulk_messages(self):
         # create 10 messages
@@ -139,14 +139,14 @@ class TestMultipleMessages(APITestCase):
         # check that 3 messages have been deleted
         get_url = reverse('message-list')
         response = self.client.get(get_url, query_params={'from_id' : 1, 'to_id' : 4}, format='json')
-        self.assertEqual(len(response.data), 1) # id=2 remains in this range
+        self.assertEqual(len(response.data['results']), 1) # id=2 remains in this range
         # delete 7 remaining messages
         data = [2,5,6,7,8,9,10]
         response = self.client.post(url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         # check that all are deleted
         response = self.client.get(get_url, query_params={'from_id' : 1, 'to_id' : 10}, format='json')
-        self.assertEqual(len(response.data), 0)
+        self.assertEqual(len(response.data['results']), 0)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
 
