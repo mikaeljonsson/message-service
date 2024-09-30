@@ -36,57 +36,46 @@ sudo apt-get install python3 python3-dev
 Install pip
 ### Setup virtual environment:
 This is to avoid polluting the global environment.
+
+``` shell
 sudo apt install python3.12-venv
 python3 -m venv ~/.virtualenvs/djangodev
 source ~/.virtualenvs/djansource ~/.virtualenvs/djangodev/bin/activate
+```
 
-### Install Django (in virtual environment):
-python -m pip install Django
+### Download the repository
+Store the repository in suitable location and step into it:
+``` shell
+git clone git@github.com:mikaeljonsson/message-service.git
+cd message-service
+```
 
-### Install Django REST framework and other modules needed by the application
-Use pip install to get packages that you need.
-This is the list I have installed (using 'pip list') but your version may be different:
+### Install Python Packages (in virtual environment):
+Install Django, Django REST framework and other modules needed by the application.
 
-Package             Version
-------------------- ---------
-asgiref             3.8.1
-certifi             2024.8.30
-charset-normalizer  3.3.2
-defusedxml          0.7.1
-Django              5.1.1
-django-filter       24.3
-djangorestframework 3.15.2
-httpie              3.2.3
-idna                3.10
-Markdown            3.7
-markdown-it-py      3.0.0
-mdurl               0.1.2
-multidict           6.1.0
-pip                 24.0
-Pygments            2.18.0
-PySocks             1.7.1
-requests            2.31.0
-requests-toolbelt   1.0.0
-rich                13.8.1
-setuptools          75.1.0
-sqlparse            0.5.1
-urllib3             2.2.3
+``` shell
+pip install -r message_service/requirements.txt
+```
 
 ## Build
 Before you run you first need to create a database:
+
+``` shell
+cd message_service/
 python3 manage.py makemigrations message_app
 python3 manage.py migrate message_app
-
-## Build other artifacts
-OpenAPI schema can be built using the description here:
-https://www.django-rest-framework.org/api-guide/schemas/
+```
 
 ## Run
 This is how you start the service:
 
+``` shell
 python3 manage.py runserver
+```
 
-You should now be able to access these endpoints, either in your browser or using curl or equivalent:
+You should now be able to access these endpoints, either in your browser or using
+curl/httpie or equivalent command line tools:
+
 http://127.0.0.1:8000/messages/
 http://127.0.0.1:8000/messages/<id>/
 http://127.0.0.1:8000/messages/bulk-delete
@@ -94,8 +83,14 @@ http://127.0.0.1:8000/messages/fetch-new
 
 ### Create message
 Example:
+
+``` shell
 http POST http://127.0.0.1:8000/messages/ recipient=mikael message_body="Good times"
+```
+
 Response body:
+
+``` json
 {
     "create_time": "2024-09-30T13:01:40.865067Z",
     "id": 21,
@@ -104,19 +99,33 @@ Response body:
     "recipient": "mikael",
     "url": "http://127.0.0.1:8000/messages/21/"
 }
+```
+
+Same example command with curl:
+
+``` shell
+curl -X POST http://127.0.0.1:8000/messages/ \
+     -d "recipient=mikael" \
+     -d "message_body=Good times"
+```
 
 ### Get messages
-These query argument can be used to filter the list of messages to be returned:
+These optional query argument can be used to filter the list of messages to be returned:
 
 recipient : string : Strict match against the recipient
 from_id : integer : The lowest message id you want returned
 to_id : integer : The highest message id you want returned
 is_fetched : True | False : Get only the messages that are already fetched (or not).
 
-Example: http://127.0.0.1:8000/messages/?from_id=3&to_id=7&recipient=mikael&is_fetched=True
+Example:
+
+``` shell
+http GET http://127.0.0.1:8000/messages/?from_id=3&to_id=7&recipient=mikael&is_fetched=True
+```
 
 The returned response is json object and it's paginated (currently set at 10 to easily see the behavior).
 Example response body:
+``` json
 {
     "count": 14,
     "next": "http://127.0.0.1:8000/messages/?page=2",
@@ -141,15 +150,20 @@ Example response body:
 ...
     ]
 }
+```
 
 ### Handle individual message
 The individual message resource (messages/<id>/) allows the normal operations, GET, PUT, DELETE.
 
 Examples GET:
+``` shell
 http GET http://127.0.0.1:8000/messages/15/
+```
 
 Example response body:
+``` json
 {
+
     "create_time": "2024-09-30T09:55:34.074529Z",
     "id": 15,
     "is_fetched": true,
@@ -157,12 +171,17 @@ Example response body:
     "recipient": "mikael",
     "url": "http://127.0.0.1:8000/messages/15/"
 }
+```
 
 Example update:
+``` shell
 http PUT http://127.0.0.1:8000/messages/15/ recipient=mikael message_body="Hello world"
+```
 
 Example delete:
+``` shell
 http DELETE http://127.0.0.1:8000/messages/15/
+```
 
 ### Bulk deletion
 There is a bulk delete endpoint (messages/bulk-delete) where POST with a body that consists of a
@@ -172,7 +191,9 @@ If you go to http://127.0.0.1:8000/messages/bulk-delete in your browser
 you will get an error message and forms to provide the correct POST.
 
 Example where id 5 and 7 are removed from command line in bulk (using httpie):
+``` shell
 http POST http://127.0.0.1:8000/messages/bulk-delete []:=5 []:=7
+```
 
 The bulk delete endpoint does not follow the REST principles, but it makes sense from a performance perspective
 to make one request.
@@ -183,9 +204,12 @@ and also updates is_fetched to True.
 Rather than having a GET request that violates the REST principles of being idempotent, this functionality is kept on
 a specific endpoint. Example:
 
+``` shell
 http POST http://127.0.0.1:8000/messages/fetch-new
+```
 
 Example response body (notice that this response is not paginated):
+``` json
 [
     {
         "create_time": "2024-09-30T12:05:08.724889Z",
@@ -205,10 +229,36 @@ Example response body (notice that this response is not paginated):
     },
 ...
 ]
+```
 
 ### To run tests:
+``` shell
 cd message_service
 ./manage.py test
+```
+
+## Build and view OpenAPI schema
+This step is not needed to run the code.
+OpenAPI schemas are useful to document the API.
+There is support to automatically create a schema from the code.
+This step I have already done and the file is included in the repository:
+``` shell
+./manage.py spectacular --color --file schema.yml
+```
+
+To start a web server that dispays the schema:
+``` shell
+docker run -p 80:8080 -e SWAGGER_JSON=/schema.yml -v ${PWD}/schema.yml:/schema.yml swaggerapi/swagger-ui
+```
+You can then in your browser go to http://127.0.0.1/ and view the schema.
+
+Note that the resulting schema from the autogeneration is not perfect and needs to be adjusted.
+
+Short comings of the automatically created schema:
+* There is built in support to run the commands to the real server, but these go to  http://127.0.0.1/ instead of http://127.0.0.1/8000
+* The query arguments to GET /messages/ are not shown, only 'page'.
+* The POST bulk-delete endpoint does not have a description of the request body.
+* The POST fetch-new endpoint does not have a description of the response body.
 
 # Known shortcomings
 If a query argument is of the wrong type, e.g. from_id is not an integer, you get a 5xx response rather than a 4xx.
