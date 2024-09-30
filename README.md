@@ -29,18 +29,24 @@ motivated.
 # Instructions to use the code
 ## Setup of environment
 The code is assumed to run on a Unix-like environment.
-Install Python (recent version)
-E.g. on Ubuntu:
+If you don't have python and pip already installed, they need to be installed.
+This has been tested with python 3.12.3. Earlier versions may work, but has not been tested.
+
+Example commands to install python on Ubuntu:
+``` shell
 sudo apt-get install python3 python3-dev
+```
 
-Install pip
 ### Setup virtual environment:
-This is to avoid polluting the global environment.
-
+This is an optional step. It's good to keep the installed packages in a separate environment.
+This can be achieved by a virtual environment.
+After you install, create and activate the environment in your shell, the installed packeges
+will not affect your global environment.
+Example commands:
 ``` shell
 sudo apt install python3.12-venv
 python3 -m venv ~/.virtualenvs/djangodev
-source ~/.virtualenvs/djansource ~/.virtualenvs/djangodev/bin/activate
+source ~/.virtualenvs/djangodev/bin/activate
 ```
 
 ### Download the repository
@@ -76,16 +82,26 @@ python3 manage.py runserver
 You should now be able to access these endpoints, either in your browser or using
 curl/httpie or equivalent command line tools:
 
+``` shell
 http://127.0.0.1:8000/messages/
 http://127.0.0.1:8000/messages/<id>/
 http://127.0.0.1:8000/messages/bulk-delete
 http://127.0.0.1:8000/messages/fetch-new
+```
 
 ### Create message
-Example:
+Example command line from you shell:
 
 ``` shell
 http POST http://127.0.0.1:8000/messages/ recipient=mikael message_body="Good times"
+```
+
+Same example command but with curl:
+
+``` shell
+curl -X POST http://127.0.0.1:8000/messages/ \
+     -d "recipient=mikael" \
+     -d "message_body=Good times"
 ```
 
 Response body:
@@ -101,21 +117,15 @@ Response body:
 }
 ```
 
-Same example command with curl:
 
-``` shell
-curl -X POST http://127.0.0.1:8000/messages/ \
-     -d "recipient=mikael" \
-     -d "message_body=Good times"
-```
 
 ### Get messages
 These optional query argument can be used to filter the list of messages to be returned:
 
-recipient : string : Strict match against the recipient
-from_id : integer : The lowest message id you want returned
-to_id : integer : The highest message id you want returned
-is_fetched : True | False : Get only the messages that are already fetched (or not).
+* **recipient** : string : Strict match against the recipient
+* **from_id** : integer : The lowest message id you want returned
+* **to_id** : integer : The highest message id you want returned
+* **is_fetched** : True | False : Get only the messages that are already fetched (or not).
 
 Example:
 
@@ -261,8 +271,8 @@ Short comings of the automatically created schema:
 * The POST fetch-new endpoint does not have a description of the response body.
 
 # Known shortcomings
-If a query argument is of the wrong type, e.g. from_id is not an integer, you get a 5xx response rather than a 4xx.
-The filtering fields do not show up on the webpage and needs to be added to the URL manually.
+* If a query argument is of the wrong type, e.g. from_id is not an integer, you get a 5xx response rather than a 4xx.
+* The filtering query parameters to be used on /messages/ do not show up on the webpage and needs to be added to the URL in the browser manually.
 
 # Comments on the implementation
 
@@ -270,19 +280,20 @@ The filtering fields do not show up on the webpage and needs to be added to the 
 The implementation was requested to be done in Python. As this was my first Python project beyond Hello World,
 it's a good challenge and plenty to learn. Hence the code is likely not ideomatic when it comes to style etc.
 
-## REST framewok
-After reviewing the options of web frameworks, I decided on Django Rest Framework. Django is the most common Python web framework and Django Rest Framework builds on that to provide a REST API.
+## REST framework
+After reviewing the options of web frameworks, I decided on Django Rest Framework. Django seems to be the most common Python web framework and Django Rest Framework builds on that to provide a REST API.
 
 ## Database
 For the database I decided to go with SQLite as it's built-in to Python and the least work to setup. If this would be aimed for production, I would change this to postgres since that is scalable and a proven database option.
 
 ## Webserver
-For the webserver I went with the built in Python option. For production, Apache and mod_wsgi is recommended for better performance. For redundancy and scalability, it should be no problem to run multiple web server instances that all connect to the same DB service.
+For the webserver I went with the built in Python option. For production, Apache and mod_wsgi is recommended for better performance. For redundancy and scalability, it should be no problem to run multiple web server instances that all connect to the same database.
 
 ## Next steps
+* Improve on the automatically created OpenAPI schema.
 * Upgrade the database to Postgres.
 * Add authentication and authorization. Django provides support for this, but customization is needed.
 * Make the service easily deployable to production.
-** Create a docker container that can easily be deployed.
-** Create a cloud setup using e.g. Terraform
+  * Create a docker container that can easily be deployed.
+  * Create a cloud setup using e.g. Terraform
 * Extend the data model to become more useful.
