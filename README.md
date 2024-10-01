@@ -248,28 +248,34 @@ cd message_service
 ```
 
 ## Build and view OpenAPI schema
-This step is not needed to run the code.
 OpenAPI schemas are useful to document the API.
-There is support to automatically create a schema from the code.
-This step I have already done and the file is included in the repository:
-``` shell
-./manage.py spectacular --color --file openapi.yaml
-```
-
 To start a web server that displays the schema:
+
 ``` shell
 docker run -p 80:8080 -e SWAGGER_JSON=/openapi.yaml -v ${PWD}/openapi.yaml:/openapi.yaml swaggerapi/swagger-ui
 ```
 You can then in your browser go to http://127.0.0.1/ and view the schema.
 
-Note that the resulting schema from the autogeneration is not perfect and needs to be adjusted.
+### Steps to update the schema
+There is support to automatically create a schema from the code.
+This step I have already done and the file is included in the repository (with some manual updates):
 
-Short comings of the automatically created schema:
-* The query arguments to GET /messages/ are not shown, only 'page'. The schema has been manually updated.
-* The POST bulk-delete endpoint does not have a description of the request body. The schema has been manually updated.
-* The POST fetch-new endpoint does not have a description of the response body. The schema has been manually updated.
+``` shell
+./manage.py spectacular --color --file openapi.yaml
+```
+
+The resulting schema from the autogeneration is not perfect and needs to be adjusted.
+
+Shortcomings of the automatically created schema:
+* The query arguments to GET /messages/ are not shown, only 'page'. The schema has been manually updated with the query arguments.
+* The POST bulk-delete endpoint does not have a description of the request body. The schema has been manually updated with a body description.
+* The POST fetch-new endpoint does not have a description of the response body. The schema has been manually updated with a body description.
 * There is built in support to send requests to a server, but a server section needs to be added manually.
   This is currently not working.
+
+If the code providing the message API is updated in the future, the schema can be manually updated
+or preferably be automatically recreated, but then the shortcomings mentioned above needs to be handled.
+It is possible to provide more info in the code to make the auto generated schema more correct to avoid manual handling.
 
 # Known shortcomings
 * If a query argument is of the wrong type, e.g. from_id is not an integer, you get a 5xx response rather than a 4xx.
