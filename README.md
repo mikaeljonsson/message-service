@@ -248,27 +248,34 @@ cd message_service
 ```
 
 ## Build and view OpenAPI schema
-This step is not needed to run the code.
 OpenAPI schemas are useful to document the API.
-There is support to automatically create a schema from the code.
-This step I have already done and the file is included in the repository:
-``` shell
-./manage.py spectacular --color --file schema.yml
-```
+To start a web server that displays the schema:
 
-To start a web server that dispays the schema:
 ``` shell
-docker run -p 80:8080 -e SWAGGER_JSON=/schema.yml -v ${PWD}/schema.yml:/schema.yml swaggerapi/swagger-ui
+docker run -p 80:8080 -e SWAGGER_JSON=/openapi.yaml -v ${PWD}/openapi.yaml:/openapi.yaml swaggerapi/swagger-ui
 ```
 You can then in your browser go to http://127.0.0.1/ and view the schema.
 
-Note that the resulting schema from the autogeneration is not perfect and needs to be adjusted.
+### Steps to update the schema
+There is support to automatically create a schema from the code.
+This step I have already done and the file is included in the repository (with some manual updates):
 
-Short comings of the automatically created schema:
-* There is built in support to run the commands to the real server, but these go to  http://127.0.0.1/ instead of http://127.0.0.1/8000
-* The query arguments to GET /messages/ are not shown, only 'page'.
-* The POST bulk-delete endpoint does not have a description of the request body.
-* The POST fetch-new endpoint does not have a description of the response body.
+``` shell
+./manage.py spectacular --color --file openapi.yaml
+```
+
+The resulting schema from the autogeneration is not perfect and needs to be adjusted.
+
+Shortcomings of the automatically created schema:
+* The query arguments to GET /messages/ are not shown, only 'page'. The schema has been manually updated with the query arguments.
+* The POST bulk-delete endpoint does not have a description of the request body. The schema has been manually updated with a body description.
+* The POST fetch-new endpoint does not have a description of the response body. The schema has been manually updated with a body description.
+* There is built in support to send requests to a server, but a server section needs to be added manually.
+  This is currently not working.
+
+If the code providing the message API is updated in the future, the schema can be manually updated
+or preferably be automatically recreated, but then the shortcomings mentioned above needs to be handled.
+It is possible to provide more info in the code to make the auto generated schema more correct to avoid manual handling.
 
 # Known shortcomings
 * If a query argument is of the wrong type, e.g. from_id is not an integer, you get a 5xx response rather than a 4xx.
@@ -289,11 +296,12 @@ For the database I decided to go with SQLite as it's built-in to Python and the 
 ## Webserver
 For the webserver I went with the built in Python option. For production, Apache and mod_wsgi is recommended for better performance. For redundancy and scalability, it should be no problem to run multiple web server instances that all connect to the same database.
 
-## Next steps
-* Improve on the automatically created OpenAPI schema.
+## Next steps if this would turn into a production product
 * Upgrade the database to Postgres.
 * Add authentication and authorization. Django provides support for this, but customization is needed.
 * Make the service easily deployable to production.
   * Create a docker container that can easily be deployed.
   * Create a cloud setup using e.g. Terraform
 * Extend the data model to become more useful.
+* Improve on the automatically created OpenAPI schema to avoid need for manual updates as the schema evolves.
+

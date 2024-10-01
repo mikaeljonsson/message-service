@@ -3,6 +3,13 @@ info:
   title: Message service API
   version: 1.0.0
   description: A message service
+
+servers:
+  - url: https://api.example.com/v1
+    description: Production server
+  - url: http://localhost:8000
+    description: Local development server
+
 paths:
   /:
     get:
@@ -13,7 +20,7 @@ paths:
       - {}
       responses:
         '200':
-          description: No response body
+          description: A webpage with links to the real API endpoints
   /{format}:
     get:
       operationId: root_formatted_retrieve
@@ -31,7 +38,7 @@ paths:
       - {}
       responses:
         '200':
-          description: No response body
+          description: A webpage with links to the real API endpoints
   /messages/:
     get:
       operationId: messages_list
@@ -40,6 +47,30 @@ paths:
         required: false
         in: query
         description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: is_fetched
+        required: false
+        in: query
+        description: True returns the messages that has been fetched and False the messages that has not. Used to filter the returned messages.
+        schema:
+          type: boolean
+      - name: recipient
+        required: false
+        in: query
+        description: The recipient of the message. Used to filter the returned messages.
+        schema:
+          type: string
+      - name: from_id
+        required: false
+        in: query
+        description: The lowest id value to be returned. Used to filter the returned messages.
+        schema:
+          type: integer
+      - name: to_id
+        required: false
+        in: query
+        description: The highest id value to be returned. Used to filter the returned messages.
         schema:
           type: integer
       tags:
@@ -97,6 +128,30 @@ paths:
         required: false
         in: query
         description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: is_fetched
+        required: false
+        in: query
+        description: True returns the messages that has been fetched and False the messages that has not. Used to filter the returned messages.
+        schema:
+          type: boolean
+      - name: recipient
+        required: false
+        in: query
+        description: The recipient of the message. Used to filter the returned messages.
+        schema:
+          type: string
+      - name: from_id
+        required: false
+        in: query
+        description: The lowest id value to be returned. Used to filter the returned messages.
+        schema:
+          type: integer
+      - name: to_id
+        required: false
+        in: query
+        description: The highest id value to be returned. Used to filter the returned messages.
         schema:
           type: integer
       tags:
@@ -388,6 +443,15 @@ paths:
       operationId: messages_bulk_delete_create
       tags:
       - messages
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                type: integer
+        description: A list of message identities to be deleted
+        required: true
       security:
       - cookieAuth: []
       - basicAuth: []
@@ -408,6 +472,15 @@ paths:
         required: true
       tags:
       - messages
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                type: integer
+        description: A list of message identities to be deleted
+        required: true
       security:
       - cookieAuth: []
       - basicAuth: []
@@ -426,7 +499,13 @@ paths:
       - {}
       responses:
         '200':
-          description: No response body
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Message'
+        description: The list of new messages, not fetched before
   /messages/fetch-new{format}:
     post:
       operationId: messages_fetch_new_formatted_create
@@ -446,7 +525,13 @@ paths:
       - {}
       responses:
         '200':
-          description: No response body
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Message'
+        description: The list of new messages, not fetched before
 components:
   schemas:
     Message:
