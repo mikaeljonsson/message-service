@@ -27,7 +27,10 @@ It is ok to make assumptions as long as they are clearly communicated and
 motivated.
 
 # Instructions to use the code
-## Setup of environment
+There are multiple implementation versions, done in different languages, providing essentially
+the same functionality. The necessary setup will however differ depending on language.
+
+## Setup environment for python / django implementation
 The code is assumed to run on a Unix-like environment.
 If you don't have python and pip already installed, they need to be installed.
 This has been tested with python 3.12.3. Earlier versions may work, but has not been tested.
@@ -63,7 +66,7 @@ Install Django, Django REST framework and other modules needed by the applicatio
 pip install -r message_service/requirements.txt
 ```
 
-## Build
+### Build
 Before you run you first need to create a database:
 
 ``` shell
@@ -72,13 +75,43 @@ python3 manage.py makemigrations message_app
 python3 manage.py migrate message_app
 ```
 
-## Run
+### Start service
 This is how you start the service:
 
 ``` shell
 python3 manage.py runserver
 ```
+## Setup environment for go implementation
+First you need to install go.
 
+Example commands to install go in Mac OS using brew:
+``` shell
+brew install go
+```
+### Download the repository
+Store the repository in suitable location and step into it:
+``` shell
+git clone git@github.com:mikaeljonsson/message-service.git
+cd message-service
+```
+
+### Build TBD!!!!!
+Before you run you first need to create a database:
+
+``` shell
+cd message_service/
+python3 manage.py makemigrations message_app
+python3 manage.py migrate message_app
+```
+
+### Start service TBD !!!
+This is how you start the go service:
+
+``` shell
+python3 manage.py runserver
+```
+
+## Using the service
 You should now be able to access these endpoints, either in your browser or using
 curl/httpie or equivalent command line tools:
 
@@ -277,15 +310,14 @@ If the code providing the message API is updated in the future, the schema can b
 or preferably be automatically recreated, but then the shortcomings mentioned above needs to be handled.
 It is possible to provide more info in the code to make the auto generated schema more correct to avoid manual handling.
 
-# Known shortcomings
+# Known shortcomings in python implementation
 * If a query argument is of the wrong type, e.g. from_id is not an integer, you get a 5xx response rather than a 4xx.
 * The filtering query parameters to be used on /messages/ do not show up on the webpage and needs to be added to the URL in the browser manually.
 
-# Comments on the implementation
+# Comments on the python implementation
 
 ## Personal reflections
-The implementation was requested to be done in Python. As this was my first Python project beyond Hello World,
-it's a good challenge and plenty to learn. Hence the code is likely not ideomatic when it comes to style etc.
+This was my first Python project beyond Hello World, hence the code is likely not ideomatic when it comes to style etc.
 
 ## REST framework
 After reviewing the options of web frameworks, I decided on Django Rest Framework. Django seems to be the most common Python web framework and Django Rest Framework builds on that to provide a REST API.
@@ -305,3 +337,10 @@ For the webserver I went with the built in Python option. For production, Apache
 * Extend the data model to become more useful.
 * Improve on the automatically created OpenAPI schema to avoid need for manual updates as the schema evolves.
 
+# Comments on the go-lang implementation
+
+## REST framework
+I decided on the Echo Framework as this was useful for me to learn.
+
+## Database
+For the database I decided to go with TiDB since that's something I wanted to learn.
