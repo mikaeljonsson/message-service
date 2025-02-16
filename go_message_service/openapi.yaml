@@ -505,7 +505,7 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/Message'
-        description: The list of new messages, not fetched before
+          description: The list of new messages, not fetched before
   /messages/fetch-new{format}:
     post:
       operationId: messages_fetch_new_formatted_create
@@ -531,7 +531,7 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/Message'
-        description: The list of new messages, not fetched before
+          description: The list of new messages, not fetched before
 components:
   schemas:
     Message:
