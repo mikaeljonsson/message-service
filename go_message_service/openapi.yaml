@@ -14,10 +14,7 @@ paths:
   /:
     get:
       operationId: root_retrieve
-      security:
-      - cookieAuth: []
-      - basicAuth: []
-      - {}
+      security: []
       responses:
         '200':
           description: A webpage with links to the real API endpoints
@@ -32,10 +29,7 @@ paths:
           enum:
           - .json
         required: true
-      security:
-      - cookieAuth: []
-      - basicAuth: []
-      - {}
+      security: []
       responses:
         '200':
           description: A webpage with links to the real API endpoints
@@ -75,10 +69,7 @@ paths:
           type: integer
       tags:
       - messages
-      security:
-      - cookieAuth: []
-      - basicAuth: []
-      - {}
+      security: []
       responses:
         '200':
           content:
@@ -102,10 +93,7 @@ paths:
             schema:
               $ref: '#/components/schemas/Message'
         required: true
-      security:
-      - cookieAuth: []
-      - basicAuth: []
-      - {}
+      security: []
       responses:
         '201':
           content:
@@ -113,7 +101,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Message'
           description: ''
-  /messages{format}:
+  /messages/{format}:
     get:
       operationId: messages_formatted_list
       parameters:
@@ -156,10 +144,7 @@ paths:
           type: integer
       tags:
       - messages
-      security:
-      - cookieAuth: []
-      - basicAuth: []
-      - {}
+      security: []
       responses:
         '200':
           content:
@@ -191,10 +176,7 @@ paths:
             schema:
               $ref: '#/components/schemas/Message'
         required: true
-      security:
-      - cookieAuth: []
-      - basicAuth: []
-      - {}
+      security: []
       responses:
         '201':
           content:
@@ -213,10 +195,7 @@ paths:
         required: true
       tags:
       - messages
-      security:
-      - cookieAuth: []
-      - basicAuth: []
-      - {}
+      security: []
       responses:
         '200':
           content:
@@ -246,10 +225,7 @@ paths:
             schema:
               $ref: '#/components/schemas/Message'
         required: true
-      security:
-      - cookieAuth: []
-      - basicAuth: []
-      - {}
+      security: []
       responses:
         '200':
           content:
@@ -278,10 +254,7 @@ paths:
           multipart/form-data:
             schema:
               $ref: '#/components/schemas/PatchedMessage'
-      security:
-      - cookieAuth: []
-      - basicAuth: []
-      - {}
+      security: []
       responses:
         '200':
           content:
@@ -299,14 +272,11 @@ paths:
         required: true
       tags:
       - messages
-      security:
-      - cookieAuth: []
-      - basicAuth: []
-      - {}
+      security: []
       responses:
         '204':
           description: No response body
-  /messages/{id}{format}:
+  /messages/{id}/{format}:
     get:
       operationId: messages_formatted_retrieve
       parameters:
@@ -324,10 +294,7 @@ paths:
         required: true
       tags:
       - messages
-      security:
-      - cookieAuth: []
-      - basicAuth: []
-      - {}
+      security: []
       responses:
         '200':
           content:
@@ -364,10 +331,7 @@ paths:
             schema:
               $ref: '#/components/schemas/Message'
         required: true
-      security:
-      - cookieAuth: []
-      - basicAuth: []
-      - {}
+      security: []
       responses:
         '200':
           content:
@@ -403,10 +367,7 @@ paths:
           multipart/form-data:
             schema:
               $ref: '#/components/schemas/PatchedMessage'
-      security:
-      - cookieAuth: []
-      - basicAuth: []
-      - {}
+      security: []
       responses:
         '200':
           content:
@@ -431,10 +392,7 @@ paths:
         required: true
       tags:
       - messages
-      security:
-      - cookieAuth: []
-      - basicAuth: []
-      - {}
+      security: []
       responses:
         '204':
           description: No response body
@@ -452,14 +410,11 @@ paths:
                 type: integer
         description: A list of message identities to be deleted
         required: true
-      security:
-      - cookieAuth: []
-      - basicAuth: []
-      - {}
+      security: []
       responses:
         '200':
           description: No response body
-  /messages/bulk-delete{format}:
+  /messages/bulk-delete/{format}:
     post:
       operationId: messages_bulk_delete_formatted_create
       parameters:
@@ -481,10 +436,7 @@ paths:
                 type: integer
         description: A list of message identities to be deleted
         required: true
-      security:
-      - cookieAuth: []
-      - basicAuth: []
-      - {}
+      security: []
       responses:
         '200':
           description: No response body
@@ -493,10 +445,7 @@ paths:
       operationId: messages_fetch_new_create
       tags:
       - messages
-      security:
-      - cookieAuth: []
-      - basicAuth: []
-      - {}
+      security: []
       responses:
         '200':
           content:
@@ -506,7 +455,7 @@ paths:
                 items:
                   $ref: '#/components/schemas/Message'
           description: The list of new messages, not fetched before
-  /messages/fetch-new{format}:
+  /messages/fetch-new/{format}:
     post:
       operationId: messages_fetch_new_formatted_create
       parameters:
@@ -519,10 +468,7 @@ paths:
         required: true
       tags:
       - messages
-      security:
-      - cookieAuth: []
-      - basicAuth: []
-      - {}
+      security: []
       responses:
         '200':
           content:
@@ -606,11 +552,11 @@ components:
           maxLength: 5000
         is_fetched:
           type: boolean
-  securitySchemes:
-    basicAuth:
-      type: http
-      scheme: basic
-    cookieAuth:
-      type: apiKey
-      in: cookie
-      name: sessionid
+#  securitySchemes:
+#    basicAuth:
+#      type: http
+#     scheme: basic
+#    cookieAuth:
+#      type: apiKey
+#      in: cookie
+#      name: sessionid

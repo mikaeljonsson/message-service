@@ -8,7 +8,6 @@ package api
 import (
 	"bytes"
 	"compress/gzip"
-	"context"
 	"encoding/base64"
 	"fmt"
 	"net/http"
@@ -21,11 +20,6 @@ import (
 	"github.com/oapi-codegen/runtime"
 )
 
-const (
-	BasicAuthScopes  = "basicAuth.Scopes"
-	CookieAuthScopes = "cookieAuth.Scopes"
-)
-
 // Defines values for MessagesBulkDeleteFormattedCreateParamsFormat.
 const (
 	MessagesBulkDeleteFormattedCreateParamsFormatDotJson MessagesBulkDeleteFormattedCreateParamsFormat = ".json"
@@ -34,6 +28,16 @@ const (
 // Defines values for MessagesFetchNewFormattedCreateParamsFormat.
 const (
 	MessagesFetchNewFormattedCreateParamsFormatDotJson MessagesFetchNewFormattedCreateParamsFormat = ".json"
+)
+
+// Defines values for MessagesFormattedListParamsFormat.
+const (
+	MessagesFormattedListParamsFormatDotJson MessagesFormattedListParamsFormat = ".json"
+)
+
+// Defines values for MessagesFormattedCreateParamsFormat.
+const (
+	MessagesFormattedCreateParamsFormatDotJson MessagesFormattedCreateParamsFormat = ".json"
 )
 
 // Defines values for MessagesFormattedDestroyParamsFormat.
@@ -54,16 +58,6 @@ const (
 // Defines values for MessagesFormattedUpdateParamsFormat.
 const (
 	MessagesFormattedUpdateParamsFormatDotJson MessagesFormattedUpdateParamsFormat = ".json"
-)
-
-// Defines values for MessagesFormattedListParamsFormat.
-const (
-	MessagesFormattedListParamsFormatDotJson MessagesFormattedListParamsFormat = ".json"
-)
-
-// Defines values for MessagesFormattedCreateParamsFormat.
-const (
-	MessagesFormattedCreateParamsFormatDotJson MessagesFormattedCreateParamsFormat = ".json"
 )
 
 // Defines values for RootFormattedRetrieveParamsFormat.
@@ -129,18 +123,6 @@ type MessagesBulkDeleteFormattedCreateParamsFormat string
 // MessagesFetchNewFormattedCreateParamsFormat defines parameters for MessagesFetchNewFormattedCreate.
 type MessagesFetchNewFormattedCreateParamsFormat string
 
-// MessagesFormattedDestroyParamsFormat defines parameters for MessagesFormattedDestroy.
-type MessagesFormattedDestroyParamsFormat string
-
-// MessagesFormattedRetrieveParamsFormat defines parameters for MessagesFormattedRetrieve.
-type MessagesFormattedRetrieveParamsFormat string
-
-// MessagesFormattedPartialUpdateParamsFormat defines parameters for MessagesFormattedPartialUpdate.
-type MessagesFormattedPartialUpdateParamsFormat string
-
-// MessagesFormattedUpdateParamsFormat defines parameters for MessagesFormattedUpdate.
-type MessagesFormattedUpdateParamsFormat string
-
 // MessagesFormattedListParams defines parameters for MessagesFormattedList.
 type MessagesFormattedListParams struct {
 	// Page A page number within the paginated result set.
@@ -165,6 +147,18 @@ type MessagesFormattedListParamsFormat string
 // MessagesFormattedCreateParamsFormat defines parameters for MessagesFormattedCreate.
 type MessagesFormattedCreateParamsFormat string
 
+// MessagesFormattedDestroyParamsFormat defines parameters for MessagesFormattedDestroy.
+type MessagesFormattedDestroyParamsFormat string
+
+// MessagesFormattedRetrieveParamsFormat defines parameters for MessagesFormattedRetrieve.
+type MessagesFormattedRetrieveParamsFormat string
+
+// MessagesFormattedPartialUpdateParamsFormat defines parameters for MessagesFormattedPartialUpdate.
+type MessagesFormattedPartialUpdateParamsFormat string
+
+// MessagesFormattedUpdateParamsFormat defines parameters for MessagesFormattedUpdate.
+type MessagesFormattedUpdateParamsFormat string
+
 // RootFormattedRetrieveParamsFormat defines parameters for RootFormattedRetrieve.
 type RootFormattedRetrieveParamsFormat string
 
@@ -182,6 +176,15 @@ type MessagesBulkDeleteCreateJSONRequestBody = MessagesBulkDeleteCreateJSONBody
 
 // MessagesBulkDeleteFormattedCreateJSONRequestBody defines body for MessagesBulkDeleteFormattedCreate for application/json ContentType.
 type MessagesBulkDeleteFormattedCreateJSONRequestBody = MessagesBulkDeleteFormattedCreateJSONBody
+
+// MessagesFormattedCreateJSONRequestBody defines body for MessagesFormattedCreate for application/json ContentType.
+type MessagesFormattedCreateJSONRequestBody = Message
+
+// MessagesFormattedCreateFormdataRequestBody defines body for MessagesFormattedCreate for application/x-www-form-urlencoded ContentType.
+type MessagesFormattedCreateFormdataRequestBody = Message
+
+// MessagesFormattedCreateMultipartRequestBody defines body for MessagesFormattedCreate for multipart/form-data ContentType.
+type MessagesFormattedCreateMultipartRequestBody = Message
 
 // MessagesPartialUpdateJSONRequestBody defines body for MessagesPartialUpdate for application/json ContentType.
 type MessagesPartialUpdateJSONRequestBody = PatchedMessage
@@ -219,15 +222,6 @@ type MessagesFormattedUpdateFormdataRequestBody = Message
 // MessagesFormattedUpdateMultipartRequestBody defines body for MessagesFormattedUpdate for multipart/form-data ContentType.
 type MessagesFormattedUpdateMultipartRequestBody = Message
 
-// MessagesFormattedCreateJSONRequestBody defines body for MessagesFormattedCreate for application/json ContentType.
-type MessagesFormattedCreateJSONRequestBody = Message
-
-// MessagesFormattedCreateFormdataRequestBody defines body for MessagesFormattedCreate for application/x-www-form-urlencoded ContentType.
-type MessagesFormattedCreateFormdataRequestBody = Message
-
-// MessagesFormattedCreateMultipartRequestBody defines body for MessagesFormattedCreate for multipart/form-data ContentType.
-type MessagesFormattedCreateMultipartRequestBody = Message
-
 // ServerInterface represents all server handlers.
 type ServerInterface interface {
 
@@ -243,14 +237,20 @@ type ServerInterface interface {
 	// (POST /messages/bulk-delete)
 	MessagesBulkDeleteCreate(w http.ResponseWriter, r *http.Request)
 
-	// (POST /messages/bulk-delete{format})
+	// (POST /messages/bulk-delete/{format})
 	MessagesBulkDeleteFormattedCreate(w http.ResponseWriter, r *http.Request, format MessagesBulkDeleteFormattedCreateParamsFormat)
 
 	// (POST /messages/fetch-new)
 	MessagesFetchNewCreate(w http.ResponseWriter, r *http.Request)
 
-	// (POST /messages/fetch-new{format})
+	// (POST /messages/fetch-new/{format})
 	MessagesFetchNewFormattedCreate(w http.ResponseWriter, r *http.Request, format MessagesFetchNewFormattedCreateParamsFormat)
+
+	// (GET /messages/{format})
+	MessagesFormattedList(w http.ResponseWriter, r *http.Request, format MessagesFormattedListParamsFormat, params MessagesFormattedListParams)
+
+	// (POST /messages/{format})
+	MessagesFormattedCreate(w http.ResponseWriter, r *http.Request, format MessagesFormattedCreateParamsFormat)
 
 	// (DELETE /messages/{id}/)
 	MessagesDestroy(w http.ResponseWriter, r *http.Request, id int)
@@ -264,23 +264,17 @@ type ServerInterface interface {
 	// (PUT /messages/{id}/)
 	MessagesUpdate(w http.ResponseWriter, r *http.Request, id int)
 
-	// (DELETE /messages/{id}{format})
+	// (DELETE /messages/{id}/{format})
 	MessagesFormattedDestroy(w http.ResponseWriter, r *http.Request, id int, format MessagesFormattedDestroyParamsFormat)
 
-	// (GET /messages/{id}{format})
+	// (GET /messages/{id}/{format})
 	MessagesFormattedRetrieve(w http.ResponseWriter, r *http.Request, id int, format MessagesFormattedRetrieveParamsFormat)
 
-	// (PATCH /messages/{id}{format})
+	// (PATCH /messages/{id}/{format})
 	MessagesFormattedPartialUpdate(w http.ResponseWriter, r *http.Request, id int, format MessagesFormattedPartialUpdateParamsFormat)
 
-	// (PUT /messages/{id}{format})
+	// (PUT /messages/{id}/{format})
 	MessagesFormattedUpdate(w http.ResponseWriter, r *http.Request, id int, format MessagesFormattedUpdateParamsFormat)
-
-	// (GET /messages{format})
-	MessagesFormattedList(w http.ResponseWriter, r *http.Request, format MessagesFormattedListParamsFormat, params MessagesFormattedListParams)
-
-	// (POST /messages{format})
-	MessagesFormattedCreate(w http.ResponseWriter, r *http.Request, format MessagesFormattedCreateParamsFormat)
 
 	// (GET /{format})
 	RootFormattedRetrieve(w http.ResponseWriter, r *http.Request, format RootFormattedRetrieveParamsFormat)
@@ -298,14 +292,6 @@ type MiddlewareFunc func(http.Handler) http.Handler
 // RootRetrieve operation middleware
 func (siw *ServerInterfaceWrapper) RootRetrieve(w http.ResponseWriter, r *http.Request) {
 
-	ctx := r.Context()
-
-	ctx = context.WithValue(ctx, CookieAuthScopes, []string{})
-
-	ctx = context.WithValue(ctx, BasicAuthScopes, []string{})
-
-	r = r.WithContext(ctx)
-
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.RootRetrieve(w, r)
 	}))
@@ -321,14 +307,6 @@ func (siw *ServerInterfaceWrapper) RootRetrieve(w http.ResponseWriter, r *http.R
 func (siw *ServerInterfaceWrapper) MessagesList(w http.ResponseWriter, r *http.Request) {
 
 	var err error
-
-	ctx := r.Context()
-
-	ctx = context.WithValue(ctx, CookieAuthScopes, []string{})
-
-	ctx = context.WithValue(ctx, BasicAuthScopes, []string{})
-
-	r = r.WithContext(ctx)
 
 	// Parameter object where we will unmarshal all parameters from the context
 	var params MessagesListParams
@@ -387,14 +365,6 @@ func (siw *ServerInterfaceWrapper) MessagesList(w http.ResponseWriter, r *http.R
 // MessagesCreate operation middleware
 func (siw *ServerInterfaceWrapper) MessagesCreate(w http.ResponseWriter, r *http.Request) {
 
-	ctx := r.Context()
-
-	ctx = context.WithValue(ctx, CookieAuthScopes, []string{})
-
-	ctx = context.WithValue(ctx, BasicAuthScopes, []string{})
-
-	r = r.WithContext(ctx)
-
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.MessagesCreate(w, r)
 	}))
@@ -408,14 +378,6 @@ func (siw *ServerInterfaceWrapper) MessagesCreate(w http.ResponseWriter, r *http
 
 // MessagesBulkDeleteCreate operation middleware
 func (siw *ServerInterfaceWrapper) MessagesBulkDeleteCreate(w http.ResponseWriter, r *http.Request) {
-
-	ctx := r.Context()
-
-	ctx = context.WithValue(ctx, CookieAuthScopes, []string{})
-
-	ctx = context.WithValue(ctx, BasicAuthScopes, []string{})
-
-	r = r.WithContext(ctx)
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.MessagesBulkDeleteCreate(w, r)
@@ -442,14 +404,6 @@ func (siw *ServerInterfaceWrapper) MessagesBulkDeleteFormattedCreate(w http.Resp
 		return
 	}
 
-	ctx := r.Context()
-
-	ctx = context.WithValue(ctx, CookieAuthScopes, []string{})
-
-	ctx = context.WithValue(ctx, BasicAuthScopes, []string{})
-
-	r = r.WithContext(ctx)
-
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.MessagesBulkDeleteFormattedCreate(w, r, format)
 	}))
@@ -463,14 +417,6 @@ func (siw *ServerInterfaceWrapper) MessagesBulkDeleteFormattedCreate(w http.Resp
 
 // MessagesFetchNewCreate operation middleware
 func (siw *ServerInterfaceWrapper) MessagesFetchNewCreate(w http.ResponseWriter, r *http.Request) {
-
-	ctx := r.Context()
-
-	ctx = context.WithValue(ctx, CookieAuthScopes, []string{})
-
-	ctx = context.WithValue(ctx, BasicAuthScopes, []string{})
-
-	r = r.WithContext(ctx)
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.MessagesFetchNewCreate(w, r)
@@ -497,316 +443,8 @@ func (siw *ServerInterfaceWrapper) MessagesFetchNewFormattedCreate(w http.Respon
 		return
 	}
 
-	ctx := r.Context()
-
-	ctx = context.WithValue(ctx, CookieAuthScopes, []string{})
-
-	ctx = context.WithValue(ctx, BasicAuthScopes, []string{})
-
-	r = r.WithContext(ctx)
-
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.MessagesFetchNewFormattedCreate(w, r, format)
-	}))
-
-	for _, middleware := range siw.HandlerMiddlewares {
-		handler = middleware(handler)
-	}
-
-	handler.ServeHTTP(w, r)
-}
-
-// MessagesDestroy operation middleware
-func (siw *ServerInterfaceWrapper) MessagesDestroy(w http.ResponseWriter, r *http.Request) {
-
-	var err error
-
-	// ------------- Path parameter "id" -------------
-	var id int
-
-	err = runtime.BindStyledParameterWithOptions("simple", "id", r.PathValue("id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
-	if err != nil {
-		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "id", Err: err})
-		return
-	}
-
-	ctx := r.Context()
-
-	ctx = context.WithValue(ctx, CookieAuthScopes, []string{})
-
-	ctx = context.WithValue(ctx, BasicAuthScopes, []string{})
-
-	r = r.WithContext(ctx)
-
-	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.MessagesDestroy(w, r, id)
-	}))
-
-	for _, middleware := range siw.HandlerMiddlewares {
-		handler = middleware(handler)
-	}
-
-	handler.ServeHTTP(w, r)
-}
-
-// MessagesRetrieve operation middleware
-func (siw *ServerInterfaceWrapper) MessagesRetrieve(w http.ResponseWriter, r *http.Request) {
-
-	var err error
-
-	// ------------- Path parameter "id" -------------
-	var id int
-
-	err = runtime.BindStyledParameterWithOptions("simple", "id", r.PathValue("id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
-	if err != nil {
-		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "id", Err: err})
-		return
-	}
-
-	ctx := r.Context()
-
-	ctx = context.WithValue(ctx, CookieAuthScopes, []string{})
-
-	ctx = context.WithValue(ctx, BasicAuthScopes, []string{})
-
-	r = r.WithContext(ctx)
-
-	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.MessagesRetrieve(w, r, id)
-	}))
-
-	for _, middleware := range siw.HandlerMiddlewares {
-		handler = middleware(handler)
-	}
-
-	handler.ServeHTTP(w, r)
-}
-
-// MessagesPartialUpdate operation middleware
-func (siw *ServerInterfaceWrapper) MessagesPartialUpdate(w http.ResponseWriter, r *http.Request) {
-
-	var err error
-
-	// ------------- Path parameter "id" -------------
-	var id int
-
-	err = runtime.BindStyledParameterWithOptions("simple", "id", r.PathValue("id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
-	if err != nil {
-		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "id", Err: err})
-		return
-	}
-
-	ctx := r.Context()
-
-	ctx = context.WithValue(ctx, CookieAuthScopes, []string{})
-
-	ctx = context.WithValue(ctx, BasicAuthScopes, []string{})
-
-	r = r.WithContext(ctx)
-
-	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.MessagesPartialUpdate(w, r, id)
-	}))
-
-	for _, middleware := range siw.HandlerMiddlewares {
-		handler = middleware(handler)
-	}
-
-	handler.ServeHTTP(w, r)
-}
-
-// MessagesUpdate operation middleware
-func (siw *ServerInterfaceWrapper) MessagesUpdate(w http.ResponseWriter, r *http.Request) {
-
-	var err error
-
-	// ------------- Path parameter "id" -------------
-	var id int
-
-	err = runtime.BindStyledParameterWithOptions("simple", "id", r.PathValue("id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
-	if err != nil {
-		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "id", Err: err})
-		return
-	}
-
-	ctx := r.Context()
-
-	ctx = context.WithValue(ctx, CookieAuthScopes, []string{})
-
-	ctx = context.WithValue(ctx, BasicAuthScopes, []string{})
-
-	r = r.WithContext(ctx)
-
-	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.MessagesUpdate(w, r, id)
-	}))
-
-	for _, middleware := range siw.HandlerMiddlewares {
-		handler = middleware(handler)
-	}
-
-	handler.ServeHTTP(w, r)
-}
-
-// MessagesFormattedDestroy operation middleware
-func (siw *ServerInterfaceWrapper) MessagesFormattedDestroy(w http.ResponseWriter, r *http.Request) {
-
-	var err error
-
-	// ------------- Path parameter "id" -------------
-	var id int
-
-	err = runtime.BindStyledParameterWithOptions("simple", "id", r.PathValue("id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
-	if err != nil {
-		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "id", Err: err})
-		return
-	}
-
-	// ------------- Path parameter "format" -------------
-	var format MessagesFormattedDestroyParamsFormat
-
-	err = runtime.BindStyledParameterWithOptions("simple", "format", r.PathValue("format"), &format, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
-	if err != nil {
-		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "format", Err: err})
-		return
-	}
-
-	ctx := r.Context()
-
-	ctx = context.WithValue(ctx, CookieAuthScopes, []string{})
-
-	ctx = context.WithValue(ctx, BasicAuthScopes, []string{})
-
-	r = r.WithContext(ctx)
-
-	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.MessagesFormattedDestroy(w, r, id, format)
-	}))
-
-	for _, middleware := range siw.HandlerMiddlewares {
-		handler = middleware(handler)
-	}
-
-	handler.ServeHTTP(w, r)
-}
-
-// MessagesFormattedRetrieve operation middleware
-func (siw *ServerInterfaceWrapper) MessagesFormattedRetrieve(w http.ResponseWriter, r *http.Request) {
-
-	var err error
-
-	// ------------- Path parameter "id" -------------
-	var id int
-
-	err = runtime.BindStyledParameterWithOptions("simple", "id", r.PathValue("id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
-	if err != nil {
-		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "id", Err: err})
-		return
-	}
-
-	// ------------- Path parameter "format" -------------
-	var format MessagesFormattedRetrieveParamsFormat
-
-	err = runtime.BindStyledParameterWithOptions("simple", "format", r.PathValue("format"), &format, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
-	if err != nil {
-		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "format", Err: err})
-		return
-	}
-
-	ctx := r.Context()
-
-	ctx = context.WithValue(ctx, CookieAuthScopes, []string{})
-
-	ctx = context.WithValue(ctx, BasicAuthScopes, []string{})
-
-	r = r.WithContext(ctx)
-
-	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.MessagesFormattedRetrieve(w, r, id, format)
-	}))
-
-	for _, middleware := range siw.HandlerMiddlewares {
-		handler = middleware(handler)
-	}
-
-	handler.ServeHTTP(w, r)
-}
-
-// MessagesFormattedPartialUpdate operation middleware
-func (siw *ServerInterfaceWrapper) MessagesFormattedPartialUpdate(w http.ResponseWriter, r *http.Request) {
-
-	var err error
-
-	// ------------- Path parameter "id" -------------
-	var id int
-
-	err = runtime.BindStyledParameterWithOptions("simple", "id", r.PathValue("id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
-	if err != nil {
-		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "id", Err: err})
-		return
-	}
-
-	// ------------- Path parameter "format" -------------
-	var format MessagesFormattedPartialUpdateParamsFormat
-
-	err = runtime.BindStyledParameterWithOptions("simple", "format", r.PathValue("format"), &format, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
-	if err != nil {
-		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "format", Err: err})
-		return
-	}
-
-	ctx := r.Context()
-
-	ctx = context.WithValue(ctx, CookieAuthScopes, []string{})
-
-	ctx = context.WithValue(ctx, BasicAuthScopes, []string{})
-
-	r = r.WithContext(ctx)
-
-	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.MessagesFormattedPartialUpdate(w, r, id, format)
-	}))
-
-	for _, middleware := range siw.HandlerMiddlewares {
-		handler = middleware(handler)
-	}
-
-	handler.ServeHTTP(w, r)
-}
-
-// MessagesFormattedUpdate operation middleware
-func (siw *ServerInterfaceWrapper) MessagesFormattedUpdate(w http.ResponseWriter, r *http.Request) {
-
-	var err error
-
-	// ------------- Path parameter "id" -------------
-	var id int
-
-	err = runtime.BindStyledParameterWithOptions("simple", "id", r.PathValue("id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
-	if err != nil {
-		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "id", Err: err})
-		return
-	}
-
-	// ------------- Path parameter "format" -------------
-	var format MessagesFormattedUpdateParamsFormat
-
-	err = runtime.BindStyledParameterWithOptions("simple", "format", r.PathValue("format"), &format, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
-	if err != nil {
-		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "format", Err: err})
-		return
-	}
-
-	ctx := r.Context()
-
-	ctx = context.WithValue(ctx, CookieAuthScopes, []string{})
-
-	ctx = context.WithValue(ctx, BasicAuthScopes, []string{})
-
-	r = r.WithContext(ctx)
-
-	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.MessagesFormattedUpdate(w, r, id, format)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -829,14 +467,6 @@ func (siw *ServerInterfaceWrapper) MessagesFormattedList(w http.ResponseWriter, 
 		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "format", Err: err})
 		return
 	}
-
-	ctx := r.Context()
-
-	ctx = context.WithValue(ctx, CookieAuthScopes, []string{})
-
-	ctx = context.WithValue(ctx, BasicAuthScopes, []string{})
-
-	r = r.WithContext(ctx)
 
 	// Parameter object where we will unmarshal all parameters from the context
 	var params MessagesFormattedListParams
@@ -906,16 +536,244 @@ func (siw *ServerInterfaceWrapper) MessagesFormattedCreate(w http.ResponseWriter
 		return
 	}
 
-	ctx := r.Context()
-
-	ctx = context.WithValue(ctx, CookieAuthScopes, []string{})
-
-	ctx = context.WithValue(ctx, BasicAuthScopes, []string{})
-
-	r = r.WithContext(ctx)
-
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.MessagesFormattedCreate(w, r, format)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// MessagesDestroy operation middleware
+func (siw *ServerInterfaceWrapper) MessagesDestroy(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+
+	// ------------- Path parameter "id" -------------
+	var id int
+
+	err = runtime.BindStyledParameterWithOptions("simple", "id", r.PathValue("id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "id", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.MessagesDestroy(w, r, id)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// MessagesRetrieve operation middleware
+func (siw *ServerInterfaceWrapper) MessagesRetrieve(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+
+	// ------------- Path parameter "id" -------------
+	var id int
+
+	err = runtime.BindStyledParameterWithOptions("simple", "id", r.PathValue("id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "id", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.MessagesRetrieve(w, r, id)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// MessagesPartialUpdate operation middleware
+func (siw *ServerInterfaceWrapper) MessagesPartialUpdate(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+
+	// ------------- Path parameter "id" -------------
+	var id int
+
+	err = runtime.BindStyledParameterWithOptions("simple", "id", r.PathValue("id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "id", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.MessagesPartialUpdate(w, r, id)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// MessagesUpdate operation middleware
+func (siw *ServerInterfaceWrapper) MessagesUpdate(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+
+	// ------------- Path parameter "id" -------------
+	var id int
+
+	err = runtime.BindStyledParameterWithOptions("simple", "id", r.PathValue("id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "id", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.MessagesUpdate(w, r, id)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// MessagesFormattedDestroy operation middleware
+func (siw *ServerInterfaceWrapper) MessagesFormattedDestroy(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+
+	// ------------- Path parameter "id" -------------
+	var id int
+
+	err = runtime.BindStyledParameterWithOptions("simple", "id", r.PathValue("id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "id", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "format" -------------
+	var format MessagesFormattedDestroyParamsFormat
+
+	err = runtime.BindStyledParameterWithOptions("simple", "format", r.PathValue("format"), &format, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "format", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.MessagesFormattedDestroy(w, r, id, format)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// MessagesFormattedRetrieve operation middleware
+func (siw *ServerInterfaceWrapper) MessagesFormattedRetrieve(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+
+	// ------------- Path parameter "id" -------------
+	var id int
+
+	err = runtime.BindStyledParameterWithOptions("simple", "id", r.PathValue("id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "id", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "format" -------------
+	var format MessagesFormattedRetrieveParamsFormat
+
+	err = runtime.BindStyledParameterWithOptions("simple", "format", r.PathValue("format"), &format, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "format", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.MessagesFormattedRetrieve(w, r, id, format)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// MessagesFormattedPartialUpdate operation middleware
+func (siw *ServerInterfaceWrapper) MessagesFormattedPartialUpdate(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+
+	// ------------- Path parameter "id" -------------
+	var id int
+
+	err = runtime.BindStyledParameterWithOptions("simple", "id", r.PathValue("id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "id", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "format" -------------
+	var format MessagesFormattedPartialUpdateParamsFormat
+
+	err = runtime.BindStyledParameterWithOptions("simple", "format", r.PathValue("format"), &format, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "format", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.MessagesFormattedPartialUpdate(w, r, id, format)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// MessagesFormattedUpdate operation middleware
+func (siw *ServerInterfaceWrapper) MessagesFormattedUpdate(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+
+	// ------------- Path parameter "id" -------------
+	var id int
+
+	err = runtime.BindStyledParameterWithOptions("simple", "id", r.PathValue("id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "id", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "format" -------------
+	var format MessagesFormattedUpdateParamsFormat
+
+	err = runtime.BindStyledParameterWithOptions("simple", "format", r.PathValue("format"), &format, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "format", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.MessagesFormattedUpdate(w, r, id, format)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -938,14 +796,6 @@ func (siw *ServerInterfaceWrapper) RootFormattedRetrieve(w http.ResponseWriter, 
 		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "format", Err: err})
 		return
 	}
-
-	ctx := r.Context()
-
-	ctx = context.WithValue(ctx, CookieAuthScopes, []string{})
-
-	ctx = context.WithValue(ctx, BasicAuthScopes, []string{})
-
-	r = r.WithContext(ctx)
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.RootFormattedRetrieve(w, r, format)
@@ -1082,19 +932,19 @@ func HandlerWithOptions(si ServerInterface, options StdHTTPServerOptions) http.H
 	m.HandleFunc("GET "+options.BaseURL+"/messages/", wrapper.MessagesList)
 	m.HandleFunc("POST "+options.BaseURL+"/messages/", wrapper.MessagesCreate)
 	m.HandleFunc("POST "+options.BaseURL+"/messages/bulk-delete", wrapper.MessagesBulkDeleteCreate)
-	m.HandleFunc("POST "+options.BaseURL+"/messages/bulk-delete{format}", wrapper.MessagesBulkDeleteFormattedCreate)
+	m.HandleFunc("POST "+options.BaseURL+"/messages/bulk-delete/{format}", wrapper.MessagesBulkDeleteFormattedCreate)
 	m.HandleFunc("POST "+options.BaseURL+"/messages/fetch-new", wrapper.MessagesFetchNewCreate)
-	m.HandleFunc("POST "+options.BaseURL+"/messages/fetch-new{format}", wrapper.MessagesFetchNewFormattedCreate)
+	m.HandleFunc("POST "+options.BaseURL+"/messages/fetch-new/{format}", wrapper.MessagesFetchNewFormattedCreate)
+	m.HandleFunc("GET "+options.BaseURL+"/messages/{format}", wrapper.MessagesFormattedList)
+	m.HandleFunc("POST "+options.BaseURL+"/messages/{format}", wrapper.MessagesFormattedCreate)
 	m.HandleFunc("DELETE "+options.BaseURL+"/messages/{id}/", wrapper.MessagesDestroy)
 	m.HandleFunc("GET "+options.BaseURL+"/messages/{id}/", wrapper.MessagesRetrieve)
 	m.HandleFunc("PATCH "+options.BaseURL+"/messages/{id}/", wrapper.MessagesPartialUpdate)
 	m.HandleFunc("PUT "+options.BaseURL+"/messages/{id}/", wrapper.MessagesUpdate)
-	m.HandleFunc("DELETE "+options.BaseURL+"/messages/{id}{format}", wrapper.MessagesFormattedDestroy)
-	m.HandleFunc("GET "+options.BaseURL+"/messages/{id}{format}", wrapper.MessagesFormattedRetrieve)
-	m.HandleFunc("PATCH "+options.BaseURL+"/messages/{id}{format}", wrapper.MessagesFormattedPartialUpdate)
-	m.HandleFunc("PUT "+options.BaseURL+"/messages/{id}{format}", wrapper.MessagesFormattedUpdate)
-	m.HandleFunc("GET "+options.BaseURL+"/messages{format}", wrapper.MessagesFormattedList)
-	m.HandleFunc("POST "+options.BaseURL+"/messages{format}", wrapper.MessagesFormattedCreate)
+	m.HandleFunc("DELETE "+options.BaseURL+"/messages/{id}/{format}", wrapper.MessagesFormattedDestroy)
+	m.HandleFunc("GET "+options.BaseURL+"/messages/{id}/{format}", wrapper.MessagesFormattedRetrieve)
+	m.HandleFunc("PATCH "+options.BaseURL+"/messages/{id}/{format}", wrapper.MessagesFormattedPartialUpdate)
+	m.HandleFunc("PUT "+options.BaseURL+"/messages/{id}/{format}", wrapper.MessagesFormattedUpdate)
 	m.HandleFunc("GET "+options.BaseURL+"/{format}", wrapper.RootFormattedRetrieve)
 
 	return m
@@ -1103,29 +953,27 @@ func HandlerWithOptions(si ServerInterface, options StdHTTPServerOptions) http.H
 // Base64 encoded, gzipped, json marshaled Swagger object
 var swaggerSpec = []string{
 
-	"H4sIAAAAAAAC/+xabW/bNhD+KwS3j4qlpB0wCBiGdEWBYm0XdOunwgho8WyxoUiVPNkxAv334ShZkW3l",
-	"1UmbtP5SuNLx3u+eR5EueGaL0how6Hl6wX2WQyHCz/fgvZgB/SydLcGhgnAjcyAQTlEV4ebUukIgT7kU",
-	"CAfhasQdCPmP0Uueoqsg4rgsgafco1NmxuuIK0lnrxBTBmEGLsj50ylglkOQb+9PrNUgDN0vGi9PJ1Yu",
-	"SaIQ5+/AzDDn6W9JkgxYdpCpUoHBDfGjQenK6bUgK6duDi9Y+VopR15/XktYiLzvRGNi3Omwky+QIZk+",
-	"ETNlBIJsK/FOeRyohq2aUOBcFKUGnh4evRjKpIHzdTmeI5ZpHItSjdqLI+tmsciCTh//WYoZ/PGSR5vh",
-	"m0prMSEdV1S3dDBXtvL3sXd0D3sOfKWbDlYIRfjxq4MpT/kv8WWHx217x6verjtdwjmx3K5cSO6l/uEy",
-	"hfbcj8su47KR1TriHrLKKVz+SyVrMjkRXmXHFVlvN1WIjq7yTgU1GXmSWXumYCWtDE/bS9RPIpz04L2y",
-	"Jgzkqg1K9TdQH1AuzdTSWQk+c6pEZUnJMWtzyDy4ucpIHyoMDf5+/Q47PnnLIz4H55uzh6NklJBztgQj",
-	"SsVT/mKUjF7wiJcC8xBkTP/MIKSb2kiQ3beSp/yjtfgR0CmYNz3jS2t8k5qjJBlydQETmim2UJgzrcyZ",
-	"Z2gZ5sAcCE3+MTCytIrWfz/rPP18sZbCz+M6WqtAuFCP6VDcZsRf7XubGR92GEXrRAEIzgdDm24Hn01V",
-	"TMAF15UJPperhciaeWQecEQblU59rcAtL2tLKnjU4llvFrpZoXDW7f7nKsoLVs74YG8VFsNcIMuFZxMA",
-	"w9oBY8JI9kZoD1cIG4sj9smDpJxPlUZwberJBMjuyFUx9IZ5IJJuqgciCVbauWV22ndwN5f6uLXl0eU8",
-	"Dzmk7QI8MiXZXOgKyIPJpeXd3Jo6W5wqedeC58ByNcsfzS20Nzo1Hh7kzBpsd64oS62yMErxF0+OX/QU",
-	"XodygwQirLb1PNxv8iOOYkbzuwIVz8cE/dZfM/9/BTDkDcqCx1ctDj1IvB2q19GalvODxWJxQJh0UDkN",
-	"JrOywce7qy0qjaoUDuOgTgoU91G0RjMIE+utNjh8hLQ8ZuXXcGBS6bMDCRqwIUTX9sSrSp+9DrI7d0dH",
-	"/raZ0QbP20rFMdPKh2W5wnclwaAiGtcuhSYgyW8u3gAYf7BsJcQC+3r81F80NKy+SwnehCMIsqvFBlaH",
-	"PUdspbd9G7a3mZb+3gNTFeT1KNRsvE0Bx/ui71D0QBMODCxuLvUbEv0Ai96s7QA/Oz5tbRUkEIW2JAYW",
-	"HcJGxKY65jWBqXXw6Mm8/fyskvpdp2dfxrUyXihZx81IrnBouHivwaOzy1sVS8lrC3ULevfym26J6PrH",
-	"sd7j5LeIPXlmnCY8lmf51fk7EQ6V0J9Kedtpv1cSH54qb/zR6oEZ84D2nYjzlr66/hF6q7pmMp9fS/1Q",
-	"T1/Jc376IuTrc5ebALBjLXdBwoegLdHPgLFddu8Etk85vT8cjHclujueP7E67ZnCT8cUuubdd+2ejDw5",
-	"MtLnIbeDyeFXhI/XxPuXj/uXj/uXjz/Dy8dn+G5j/7rzCWPcjdj20Vr8fo9/46fzjVA45ebD3/ucOCur",
-	"jP7DGqH2m8jmWy6/8cVgZot4fsi3F+o7mwnNJMxB27Ig7BnQlsaxJrncekx/T5KE1+P6/wAAAP//K9Ng",
-	"EAUrAAA=",
+	"H4sIAAAAAAAC/+xabWvjOBD+K0J3H53YbffgMBxH95bCQnevlNtPJRTFmsTaypJXGicNJf/9kOy4Tuwk",
+	"TdPX3XwpqT2et2dmnpHxHU10lmsFCi2N76hNUsiY//kFrGVjcD9zo3MwKMDfSAwwhGsUmb850iZjSGPK",
+	"GULPXw2oAcb/VXJGYzQFBBRnOdCYWjRCjek8oIK7Z9eICYUwBuPl7PUIMEnBy1f3h1pLYMrdz0ovr4ea",
+	"z5xExm7PQY0xpfEfURR1WDaQiFyAwhXx407pwsilIAsjtofnrfwohHFeXy0lzEfedKI0Mah16OF3SNCZ",
+	"vmBjoRgCr5A4FxY70NBFGQrcsiyXQOOj45OuTCq4XZajKWIehyHLRb+62NdmHLLE67Th3zkbw18faLAa",
+	"viqkZEOnYw26uYGJ0IV9jL3jR9gzYAtZVrBAyPyP3w2MaEx/C+8rPKzKO1zU9rzWxYxhszZyPrn3+rth",
+	"8uV5aJd92mUlq+6SUCPtdHGwiRE5Cq1oTE9JFQKxYCYicdlDgb6+vizfIacXn2lAJ2Bs+exRP+pHzkud",
+	"g2K5oDE96Uf9ExrQnGHq0QrdnzH4aB2KzNn9zGlML7XGS0AjYFJCZnOtbInxcRR1uTqFoStpMhWYEinU",
+	"jSWoCaZADDDp/COgeK6Fm74uZgtJYQTOaHw1cP+HVbB2vVtV0NZPBxeIYRkgGEvjq7ZH3h1VZEMw3iuh",
+	"vDv5YtSQstKJBey7WeWe+lGAmbkuZK6CqVNBg4opGlVWV+E8WLX7nylcyFgYZb29RVgEU4YkZZYMARSp",
+	"SpcwxckZkxbWCCuNffLNAnfpHAmJYKqsOhPA60fWxdBok45I6n7piMRbqTqC6FHTwf1cajJCy6P7Tuly",
+	"SOopWCSCkwmTBTgPhveW93NrZHR2LfiugKdAUjFOn80t1FudGnT3aKIVVtOM5bkUiW+l8Lt1jt81FG7i",
+	"j05q9lNrOQ+tpg4osrFrzcUktnTg+FLbDa39j2cQWlITWPxYDe8nCaWmwnmwpOW2N51Oe26Q9wojQSWa",
+	"l6Syu9qskChyZjD06jhD9hhFS9zsiGTeQvjoGdLySFCXpvewkDc9DhKwXBA2wv2xkDefvOzewNfLUHtT",
+	"WNl7WlGeEimsH3ELwhUcFAq31lStXAbE6XZcOtjxqyYLIeK3kb2yGt6VK8d8l/Se+UcQeJ3nFfb0k8et",
+	"Bo15WG42qyE3JxGoInNu9z0eg/a6MzgA2g2o5+Segul2FM+c6FeYNlpkj1m/56GhlWvPylW2FUxrOgvc",
+	"6lKvOUMYaQP75GmHsl8k7FWL/teBqAnMxr29xqN7gX8mNILD0eBwNDgcDd790eAdrjCHw8grH0buBJ+H",
+	"5f62OJB0F9cnsGj07EFFJfjGgnpAC354qpUy2Ey4jXd4LxFW9HaqwL/mTNL1qblgBgWT33L+0FnyqPw8",
+	"/dxYeQf/xOOjQ/teU6Slbz5/42VTbOin91ctPxXLRG+ZZZqnoG1sU68yu9DOE52F3jWh1Ynbidnecube",
+	"E2fW2d+dPN8YBAda/ploua7LQ0EemP8lmH/rG89LrfH1uGrwIp9s+Atm0v35xYXRvEjcP6QUqj7+Kr+M",
+	"siufRiU6CydHtP0G7VwnTBIOE5A6z0Bhl7Y4DKWTS7XF+M8oiuh8MP8/AAD//xIZWw/uJwAA",
 }
 
 // GetSwagger returns the content of the embedded swagger specification file
