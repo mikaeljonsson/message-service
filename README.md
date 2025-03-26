@@ -64,6 +64,7 @@ pip install -r message_service/requirements.txt
 ```
 
 ## Build
+### Locally
 Before you run you first need to create a database:
 
 ``` shell
@@ -71,8 +72,15 @@ cd message_service/
 python3 manage.py makemigrations message_app
 python3 manage.py migrate message_app
 ```
+### Docker
+To build an image stored locally:
+
+``` shell
+docker build -t message-service-image .
+```
 
 ## Run
+### Locally
 This is how you start the service:
 
 ``` shell
@@ -87,6 +95,33 @@ http://127.0.0.1:8000/messages/
 http://127.0.0.1:8000/messages/<id>/
 http://127.0.0.1:8000/messages/bulk-delete
 http://127.0.0.1:8000/messages/fetch-new
+```
+### Docker
+Run the service inside a docker container:
+
+``` shell
+docker run -p 8000:8000 message-service-image
+```
+
+### Start kubernetes cluster
+If you have your image in docker desktop you may need to get the imagee into the
+minikube cluster image repository.
+A clumsy but straight forward way is to do it this way:
+
+``` shell
+docker image save message-service-image:latest -o my-image.tar
+minikube image load my-image.tar
+```
+Once you have the image available, you then apply the deployment:
+
+``` shell
+kubectl apply -f deployment.yaml
+```
+Now the system runs in the kubernetes cluster and you can access the service.
+This command opens a tab in the browser and displays what port to access:
+
+``` shell
+minikube service my-app-service
 ```
 
 ### Create message
